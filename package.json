@@ -1,0 +1,19 @@
+{
+  "name": "deterministiccontractfactory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@openzeppelin/test-environment": "^0.1.5",
+    "chai": "^4.2.0",
+    "ethereumjs-tx": "^2.1.2",
+    "ethereumjs-util": "^7.0.5",
+    "mocha": "^8.1.3"
+  }
+}
