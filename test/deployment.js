@@ -14,10 +14,10 @@ describe('DeterministicContractFactory', async function () {
 
     const txData = {
         nonce: 0,
-        gasPrice: web3.utils.toHex(0),
-        gasLimit: web3.utils.toHex(deploymentGas),
+        gasPrice: 0,
+        gasLimit: deploymentGas,
         to: '0x0000000000000000000000000000000000000000',
-        value: web3.utils.toHex(0),
+        value: 0,
         data: deploymentBytecode,
         v: 27,
         r: r,
@@ -28,7 +28,7 @@ describe('DeterministicContractFactory', async function () {
 
     const signedEncodedTransaction = tx.serialize();
     const signedEncodedTransactionHash = keccak256(signedEncodedTransaction);
-    const pubKey = ecrecover(signedEncodedTransactionHash, v, Buffer.from(r), Buffer.from(s));
+    const pubKey = ecrecover(signedEncodedTransactionHash, txData.v, Buffer.from(txData.r), Buffer.from(txData.s));
     const signerAddress = pubToAddress(pubKey);
     const deterministicContractFactoryAddress = Address.generate(new Address(signerAddress), new BN(0));
 
@@ -40,8 +40,8 @@ describe('DeterministicContractFactory', async function () {
     await web3.eth.sendTransaction({ from: accounts[0], to: bufferToHex(signerAddress), value: amount});
 
     console.log('balance', await web3.eth.getBalance(bufferToHex(signerAddress)));
+    console.log('balance', await web3.eth.getBalance('0x2b6661926ab9ac71e7bb3d5e746121c344ab1491'));
 
-    console.log('accounts', accounts)
-    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction));
+    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction), { from : bufferToHex(signerAddress) });
     console.log('res', res);
 });
