@@ -13,13 +13,13 @@ describe('DeterministicContractFactory', async function () {
     const s = '2222222222222222222222222222222222222222222222222222222222222222';
 
     const txData = {
-        nonce: 0,
+        nonce: '0x00',
         gasPrice: web3.utils.toHex(10e8),
         gasLimit: web3.utils.toHex(deploymentGas),
         to: '0x0000000000000000000000000000000000000000',
         value: '0x00',
         data: deploymentBytecode,
-        v: 27,
+        v: 0x1b,
         r: '0x2222222222222222222222222222222222222222222222222222222222222222',
         s: '0x2222222222222222222222222222222222222222222222222222222222222222'
     };
