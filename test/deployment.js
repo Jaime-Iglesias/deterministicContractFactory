@@ -39,7 +39,7 @@ describe('DeterministicContractFactory', async function () {
     const unsignedEncodedTransaction = unsignedTx.serialize();
     const signedEncodedTransaction = signedTx.serialize();
     const unsignedEncodedTransactionHash = keccak256(unsignedEncodedTransaction);
-    const pubKey = ecrecover(unsignedEncodedTransactionHash, v, Buffer.from(signedTransaction.r), Buffer.from(signedTransaction.s), 0);
+    const pubKey = ecrecover(unsignedEncodedTransactionHash, v, Buffer.from(r), Buffer.from(s));
     const signerAddress = pubToAddress(pubKey);
     const deterministicContractFactoryAddress = Address.generate(new Address(signerAddress), new BN(0));
 
