@@ -12,9 +12,18 @@ describe('DeterministicContractFactory', async function () {
     const r = '0x2222222222222222222222222222222222222222222222222222222222222222';
     const s = '0x2222222222222222222222222222222222222222222222222222222222222222';
 
-    const txData = {
+    const unsignedTransaction = {
         nonce: 0,
-        gasPrice: 1,
+        gasPrice: 0,
+        gasLimit: 1000000,
+        to: '0x0000000000000000000000000000000000000000',
+        value: 0,
+        data: deploymentBytecode
+    };
+
+    const signedTransaction = {
+        nonce: 0,
+        gasPrice: 0,
         gasLimit: 1000000,
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
@@ -24,11 +33,13 @@ describe('DeterministicContractFactory', async function () {
         s: s
     };
 
-    const tx = new Tx(txData);
+    const unsignedTx = new Tx(unsignedTransaction);
+    const signedTx = new Tx(signedTransaction);
 
-    const signedEncodedTransaction = tx.serialize();
-    const signedEncodedTransactionHash = keccak256(signedEncodedTransaction);
-    const pubKey = ecrecover(signedEncodedTransactionHash, txData.v, Buffer.from(txData.r), Buffer.from(txData.s));
+    const unsignedEncodedTransaction = unsignedTx.serialize();
+    const signedEncodedTransaction = signedTx.serialize();
+    const unsignedEncodedTransactionHash = keccak256(unsignedEncodedTransaction);
+    const pubKey = ecrecover(unsignedEncodedTransactionHash, v, Buffer.from(signedTransaction.r), Buffer.from(signedTransaction.s), 0);
     const signerAddress = pubToAddress(pubKey);
     const deterministicContractFactoryAddress = Address.generate(new Address(signerAddress), new BN(0));
 
