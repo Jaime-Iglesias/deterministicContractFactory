@@ -9,26 +9,26 @@ describe('DeterministicContractFactory', async function () {
     const deploymentBytecode = factory.bytecode;
 
     const v = 27;
-    const r = '2222222222222222222222222222222222222222222222222222222222222222';
-    const s = '2222222222222222222222222222222222222222222222222222222222222222';
+    const r = '0x2222222222222222222222222222222222222222222222222222222222222222';
+    const s = '0x2222222222222222222222222222222222222222222222222222222222222222';
 
     const txData = {
         nonce: '0x00',
-        gasPrice: web3.utils.toHex(10e8),
+        gasPrice: web3.utils.toHex(0),
         gasLimit: web3.utils.toHex(deploymentGas),
         to: '0x0000000000000000000000000000000000000000',
         value: '0x00',
         data: deploymentBytecode,
-        v: 0x1b,
-        r: '0x2222222222222222222222222222222222222222222222222222222222222222',
-        s: '0x2222222222222222222222222222222222222222222222222222222222222222'
+        v: 27,
+        r: r,
+        s: s
     };
 
     const tx = new Tx(txData);
 
     const signedEncodedTransaction = tx.serialize();
     const signedEncodedTransactionHash = keccak256(signedEncodedTransaction);
-    const pubKey = ecrecover(signedEncodedTransactionHash, v, Buffer.from(r, 'hex'), Buffer.from(s, 'hex'));
+    const pubKey = ecrecover(signedEncodedTransactionHash, v, Buffer.from(r), Buffer.from(s));
     const signerAddress = pubToAddress(pubKey);
     const deterministicContractFactoryAddress = Address.generate(new Address(signerAddress), new BN(0));
 
@@ -41,6 +41,7 @@ describe('DeterministicContractFactory', async function () {
 
     console.log('balance', await web3.eth.getBalance(bufferToHex(signerAddress)));
 
-    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction, { from : bufferToHex(signerAddress) }));
+    console.log('accounts', accounts)
+    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction));
     console.log('res', res);
 });

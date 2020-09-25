@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "compile": "npx truffle compile",
     "test": "npx mocha"
   },
   "author": "",
