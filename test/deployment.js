@@ -14,12 +14,12 @@ describe('DeterministicContractFactory', async function () {
 
     const txData = {
         nonce: 0,
-        gasPrice: 0,
-        gasLimit: deploymentGas,
+        gasPrice: 1,
+        gasLimit: 1000000,
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: deploymentBytecode,
-        v: 27,
+        v: v,
         r: r,
         s: s
     };
@@ -40,8 +40,7 @@ describe('DeterministicContractFactory', async function () {
     await web3.eth.sendTransaction({ from: accounts[0], to: bufferToHex(signerAddress), value: amount});
 
     console.log('balance', await web3.eth.getBalance(bufferToHex(signerAddress)));
-    console.log('balance', await web3.eth.getBalance('0x2b6661926ab9ac71e7bb3d5e746121c344ab1491'));
 
-    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction), { from : bufferToHex(signerAddress) });
+    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction));
     console.log('res', res);
 });
