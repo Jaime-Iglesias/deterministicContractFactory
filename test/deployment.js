@@ -5,6 +5,7 @@ const { rlp, keccak256, ecrecover, pubToAddress, Address, bufferToHex, BN  } = r
 var Tx = require("ethereumjs-tx").Transaction
 
 describe('DeterministicContractFactory', async function () {
+    const gasPrice = 100000000000;
     const deploymentGas = 100000;
     const deploymentBytecode = factory.bytecode;
 
@@ -14,8 +15,8 @@ describe('DeterministicContractFactory', async function () {
 
     const unsignedTransaction = {
         nonce: 0,
-        gasPrice: 0,
-        gasLimit: 1000000,
+        gasPrice: gasPrice,
+        gasLimit: deploymentGas,
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: deploymentBytecode
@@ -23,8 +24,8 @@ describe('DeterministicContractFactory', async function () {
 
     const signedTransaction = {
         nonce: 0,
-        gasPrice: 0,
-        gasLimit: 1000000,
+        gasPrice: gasPrice,
+        gasLimit: deploymentGas,
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: deploymentBytecode,
@@ -36,9 +37,9 @@ describe('DeterministicContractFactory', async function () {
     const unsignedTx = new Tx(unsignedTransaction);
     const signedTx = new Tx(signedTransaction);
 
-    const unsignedEncodedTransaction = unsignedTx.serialize();
-    const signedEncodedTransaction = signedTx.serialize();
-    const unsignedEncodedTransactionHash = keccak256(unsignedEncodedTransaction);
+    const unsignedEncodedTransaction = unsignedTx.serialize();  // rlp encode the unsigned message
+    const signedEncodedTransaction = signedTx.serialize();  // rlp encode the signed message
+    const unsignedEncodedTransactionHash = keccak256(unsignedEncodedTransaction); 
     const pubKey = ecrecover(unsignedEncodedTransactionHash, v, Buffer.from(r), Buffer.from(s));
     const signerAddress = pubToAddress(pubKey);
     const deterministicContractFactoryAddress = Address.generate(new Address(signerAddress), new BN(0));
