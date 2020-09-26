@@ -1,58 +1,39 @@
 const { accounts, contract, web3 } = require('@openzeppelin/test-environment');
 
 const factory = contract.fromArtifact('DeterministicContractFactory');
-const { rlp, keccak256, ecrecover, pubToAddress, Address, bufferToHex, BN  } = require('ethereumjs-util');
+const { rlp, keccak256, ecrecover, pubToAddress, Address, bufferToHex, BN, toChecksumAddress, generateAddress, toBuffer  } = require('ethereumjs-util');
 var Tx = require("ethereumjs-tx").Transaction
 
 describe('DeterministicContractFactory', async function () {
     const gasPrice = 100000000000;
-    const deploymentGas = 100000;
+    const deploymentGas = 999999;
     const deploymentBytecode = factory.bytecode;
-
-    const v = 27;
-    const r = '0x2222222222222222222222222222222222222222222222222222222222222222';
-    const s = '0x2222222222222222222222222222222222222222222222222222222222222222';
-
-    const unsignedTransaction = {
+    
+    const rawTx = {
         nonce: 0,
         gasPrice: gasPrice,
         gasLimit: deploymentGas,
-        to: '0x0000000000000000000000000000000000000000',
-        value: 0,
-        data: deploymentBytecode
-    };
-
-    const signedTransaction = {
-        nonce: 0,
-        gasPrice: gasPrice,
-        gasLimit: deploymentGas,
-        to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: deploymentBytecode,
-        v: v,
-        r: r,
-        s: s
+        v: 27,
+        r: '0x2222222222222222222222222222222222222222222222222222222222222222',
+        s: '0x2222222222222222222222222222222222222222222222222222222222222222'
     };
 
-    const unsignedTx = new Tx(unsignedTransaction);
-    const signedTx = new Tx(signedTransaction);
+    const tx = new Tx(rawTx);
+    const signerAddress = toChecksumAddress(bufferToHex(tx.getSenderAddress()));
+    const signedTx = bufferToHex(tx.serialize());
+    const deterministicContractFactoryAddress = toChecksumAddress(bufferToHex(generateAddress(tx.getSenderAddress(), toBuffer(0))));
 
-    const unsignedEncodedTransaction = unsignedTx.serialize();  // rlp encode the unsigned message
-    const signedEncodedTransaction = signedTx.serialize();  // rlp encode the signed message
-    const unsignedEncodedTransactionHash = keccak256(unsignedEncodedTransaction); 
-    const pubKey = ecrecover(unsignedEncodedTransactionHash, v, Buffer.from(r), Buffer.from(s));
-    const signerAddress = pubToAddress(pubKey);
-    const deterministicContractFactoryAddress = Address.generate(new Address(signerAddress), new BN(0));
+    console.log('signerAddress', signerAddress);
+    console.log('deterministicContractFactoryAddress', deterministicContractFactoryAddress);
 
-    console.log('signerAddress', bufferToHex(signerAddress));
-    console.log('deterministicContractFactoryAddress', bufferToHex(deterministicContractFactoryAddress.buf));
+    const amount = web3.utils.toWei('100', 'ether');
 
-    const amount = web3.utils.toWei('10', 'ether');
+    await web3.eth.sendTransaction({ from: accounts[0], to: signerAddress, value: '100000000000000000' });
 
-    await web3.eth.sendTransaction({ from: accounts[0], to: bufferToHex(signerAddress), value: amount});
+    console.log('balance', await web3.eth.getBalance(signerAddress));
 
-    console.log('balance', await web3.eth.getBalance(bufferToHex(signerAddress)));
-
-    const res = await web3.eth.sendSignedTransaction(bufferToHex(signedEncodedTransaction));
-    console.log('res', res);
+    const res = await web3.eth.sendSignedTransaction(signedTx);
+    console.log('deployed', res.contractAddress);
 });
