@@ -62,7 +62,7 @@ To make this possible we leverage two things:
     
     It's an opcode introduced in the Constantinople hard fork which provides an alternative to the original `CREATE`.
     The main difference is that the address of the deployed contract is computed by the formula `address = hash(creator address, salt, contract creation code)`
-    Since none of these values depend on the state of the creation (remember that CREATE depends on the nonce) this means that we can guarantee that the contract
+    Since none of these values depend on the state of the creator (remember that CREATE depends on the nonce) this means that we can guarantee that the contract
     will be deployed at the same address independently of the state of the sender.
 
     **Caveats:**
