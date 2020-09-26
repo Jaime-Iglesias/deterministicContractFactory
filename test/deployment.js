@@ -28,6 +28,7 @@ contract('DeterministicContractFactory', function (accounts) {
     const signedTx = bufferToHex(tx.serialize());
     const deterministicContractFactoryAddress = toChecksumAddress(bufferToHex(generateAddress(tx.getSenderAddress(), toBuffer(0))));
 
+    console.log('signedTx', signedTx)
     console.log('signerAddress', signerAddress);
     console.log('deterministicContractFactoryAddress', deterministicContractFactoryAddress);
 
@@ -37,7 +38,7 @@ contract('DeterministicContractFactory', function (accounts) {
         //console.log('balance', await web3.eth.getBalance(signerAddress));
     
         const res = await web3.eth.sendSignedTransaction(signedTx);
-        console.log('deployed factory address', res);
+        //console.log('deployed factory address', res);
     
         const factoryContract = await Factory.at(deterministicContractFactoryAddress);
     
@@ -45,7 +46,7 @@ contract('DeterministicContractFactory', function (accounts) {
         const salt = bufferToHex(keccak256(magic));
     
         const receipt = await factoryContract.deploy(salt, ERC1820Registry.bytecode, { from : accounts[0] });
-        console.log('receipt', receipt);
+        //console.log('receipt', receipt);
 
         const ERC1820RegistryAddress = await factoryContract.computeAddress(salt, ERC1820Registry.bytecode, { from : accounts[0] });
 
