@@ -5,7 +5,7 @@ This factory contract in turn leverages CREATE2 to deploy contracts at determini
 
 ## Rationale
 
-### Why would you use such a contact ?
+### Why would you use such a contract ?
 
 The main idea behind this concept is that you can deploy the factory on top of any network at a deterministic address and then use it to
 deploy other contracts in the same fashion. This can be useful, for example, to deploy "network level contracts" (i.e singleton contracts) on any network on the same addresses,
@@ -56,11 +56,11 @@ To make this possible we leverage two things:
 
     We have to make sure that the crafted transaction can always be executed, as such we need to choose
     a pretty **high gas price** and **send enough ETH to our "one-use address"** so its able to execute it.
-    As such, the cost of deployment will be pretty high but on the possitive side we only need to deploy once per network.
+    As such, the cost of deployment will be pretty high but on the positive side we only need to deploy once per network.
 
  * **CREATE2:**
     
-    It's an opcode introduced in the Constantinople hard frok which provides an alternative to the original `CREATE`.
+    It's an opcode introduced in the Constantinople hard fork which provides an alternative to the original `CREATE`.
     The main difference is that the address of the deployed contract is computed by the formula `address = hash(creator address, salt, contract creation code)`
     Since none of these values depend on the state of the creation (remember that CREATE depends on the nonce) this means that we can guarantee that the contract
     will be deployed at the same address independently of the state of the sender.
